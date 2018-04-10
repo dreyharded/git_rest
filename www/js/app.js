@@ -2,13 +2,14 @@
 var $$ = Dom7;
 $$('.logoff').hide();
 $$('.login-screen-open').show();
-
+$$('.cardapioindex').hide();
+$$('.reservaindex').hide();
 
 // Framework7 App main instance
 var app  = new Framework7({
   root: '#app', // App root element
   id: 'io.framework7.testapp', // App bundle ID
-  name: 'Framework7', // App name
+  name: 'REST', // App name
   theme: 'auto', // Automatic theme detection
   // App root data
   data: function () {
@@ -86,6 +87,8 @@ $$('#my-login-screen .SingIn').on('click', function () {
       app.dialog.alert('Bem vindo: ' + username);
       this.$$('.toolbar-inner').text('Bem Vindo: ' + username + 'vc está logado!');
       $$('.logoff').show();
+      $$('.cardapioindex').show();
+      $$('.reservaindex').show();
       $$('.login-screen-open').hide();
       $$('input#email').val('');
       $$('input#password').val('');
@@ -138,6 +141,8 @@ $$('.logoff').on('click', function () {
       $$('input#passwordInput').val('');
       $$('.logoff').hide();
       $$('.login-screen-open').show();
+      $$('.cardapioindex').hide();
+      $$('.reservaindex').hide();
     }, function(error){
       console.error(error)
     })  
@@ -154,14 +159,84 @@ $$('#addButton').on('click', function () {
   console.log(formData);
   firebase.database().ref().child('reserva').push(formData)
   .then( function () {
-    app.dialog.alert('reserva Efetuado com Sucesso');
+    app.dialog.alert('pre-reserva Efetuado com Sucesso, aguarde o contato');
     $$('input#nome').val('');
     $$('input#emailorcamento').val('');
     $$('input#telefone').val('');
-    $$('input#especificacoes').val('');
+    $$('#especificacoes').val("");
   }, function(error){
     app.dialog.alert('Erro, confira o console');
     console.error(error)
   })
 });
 
+
+
+
+                          // barra
+
+                          
+// Set progress on inline progressbar
+$$('.set-inline-progress').on('click', function (e) {
+  var progress = $$(this).attr('data-progress');
+  app.progressbar.set('#demo-inline-progressbar', progress);
+});
+
+
+// Function show determinate progressbar and emulate loading
+determinateLoading = false;
+function showDeterminate(inline) {
+  determinateLoading = true;
+  var progressBarEl;
+  if (inline) {
+    // inline progressbar
+    progressBarEl = app.progressbar.show('#demo-determinate-container', 0);
+  } else {
+    // root progressbar
+    progressBarEl = app.progressbar.show(0, app.theme === 'md' ? 'yellow' : 'blue');
+  }
+  var progress = 0;
+  function simulateLoading() {
+    setTimeout(function () {
+      var progressBefore = progress;
+      progress += Math.random() * 20;
+      app.progressbar.set(progressBarEl, progress);
+      if (progressBefore < 100) {
+        simulateLoading(); //keep "loading"
+      }
+      else {
+        determinateLoading = false;
+        app.progressbar.hide(progressBarEl); //hide
+      }
+    }, Math.random() * 200 + 200);
+  }
+  simulateLoading();
+}
+// show inline determinate progressbar
+$$('.show-determinate').on('click', function (e) {
+  showDeterminate(true);
+});
+
+// show root determinate progressbar
+$$('.show-determinate-root').on('click', function (e) {
+  showDeterminate(false);
+});
+
+var infiniteLoading = false;
+// show inline infinite progressbar
+$$('.show-infinite').on('click', function () {
+  app.progressbar.show(app.theme === 'md' ? 'yellow' : 'blue');
+  setTimeout(function () {
+    infiniteLoading = false;
+    app.progressbar.hide();
+  }, 3000);
+});
+
+// show root infinite progressbar
+$$('.show-infinite-root').on('click', function () {
+  app.progressbar.show('multi');
+  setTimeout(function () {
+    infiniteLoading = false;
+    app.progressbar.hide();
+  }, 3000);
+});
